@@ -3,34 +3,34 @@
 }
 
 function drawBranch(x, y, tree, angle, length) {
-    a.fillStyle = 'rgb(' + tree.tint.join(',') + ')';
-    a.save();
-    a.translate(x, y);
-    a.rotate(angle);
-    a.fillStyle = '#ffe';
-    a.fillRect(0, -tree.thickness / 2 - 0.5, length, tree.thickness);
-    a.fillStyle = 'rgb(' + tree.tint.join(',') + ')';
-    a.fillRect(0, -tree.thickness / 2, length, tree.thickness);
-    a.restore();
+    ctx.fillStyle = 'rgb(' + tree.tint.join(',') + ')';
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.fillStyle = '#ffe';
+    ctx.fillRect(0, -tree.thickness / 2 - 0.5, length, tree.thickness);
+    ctx.fillStyle = 'rgb(' + tree.tint.join(',') + ')';
+    ctx.fillRect(0, -tree.thickness / 2, length, tree.thickness);
+    ctx.restore();
     drawLeaves(x, y, tree, angle);
 }
 
 function drawLeaves(x, y, tree, angle) {
-    a.save();
-    a.translate(x, y);
-    a.rotate(angle);
-    a.translate(5*growth, 0);
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.translate(5 * growth, 0);
     for(i = 0 ; i < tree.leaves.length ; i++) {
         var leaf = tree.leaves[i];
-        a.fillStyle = 'rgba(' + leaf.join(',') + ')';
-        a.fillRect(
+        ctx.fillStyle = 'rgba(' + leaf.join(',') + ')';
+        ctx.fillRect(
             -2 * growth,
             ((i % 2) ? -4 * growth : 0) + 1 * Math.cos(phase[0] * 16 + i * Math.PI / 2),
             ( 4 + Math.sin(phase[0] * 16 + i * Math.PI / 2)) * growth,
             ( 4 - Math.cos(phase[0] * 16 + i * Math.PI / 2)) * growth);
-        a.translate(10 * growth, 0);
+        ctx.translate(10 * growth, 0);
     }
-    a.restore();
+    ctx.restore();
 }
 function drawTree(x, y, tree, angle) {
     var angle = tree.angle + angle + .01 * Math.sin(phase[tree.level] + tree.phaseOffset);
@@ -92,23 +92,25 @@ function buildTreeData(parent, level) {
 function draw() {
     var i,
         gradient;
-    for(i = p.length - 1 ; i >= 0 ; i--) {
+    for(i = phase.length - 1 ; i >= 0 ; i--) {
         phase[i + 1] = phase[i];
     }
     phase[0] += .1;
-    gradient = a.createLinearGradient(0, 0, 0, h);
+    gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
     gradient.addColorStop(0,'#26b');
     gradient.addColorStop(.7,'#69e');
     gradient.addColorStop(.99,'#fcb');
     gradient.addColorStop(1,'#753');
-    a.fillStyle = gradient;
-    a.fillRect(0, 0, canvas.width, canvas.height);
-    drawTree(150, height, u, -Math.PI/2);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    drawTree(150, canvas.height, treeData, -Math.PI / 2);
 }
 
+var canvas = document.getElementsByTagName('canvas')[0];
+var ctx = c.getContext('2d');
 canvas.width = 500;
 canvas.height = 500;
 phase = [0, 0, 0, 0, 0, 0, 0, 0];
 var growth = .001;
-u = buildTreeData(null, 0);
+treeData = buildTreeData(null, 0);
 setInterval(draw, 42);
